@@ -36,9 +36,10 @@ def all_cds_filter(read_length, min_seq_length, output_file, input_file, random_
     print(f'reading cds tsv data file {input_file}')
     df = pd.read_csv(input_file, sep='\t')
 
-    if min_seq_length > 0: 
-        print(f'filtering {df.shape[0]} sequences for minimum sequence length of {min_seq_length}')
-        df = df.loc[df.sequence.str.len() >= min_seq_length]
+    if min_seq_length == 0:
+        min_seq_length = read_length
+    print(f'filtering {df.shape[0]} sequences for minimum sequence length of {min_seq_length}')
+    df = df.loc[df.sequence.str.len() >= min_seq_length]
 
     print(f'randomly sampling {df.shape[0]} sequences to maximum length of {read_length}')
     df["sequence"].apply(make_reads, max_length=read_length)
@@ -48,26 +49,25 @@ def all_cds_filter(read_length, min_seq_length, output_file, input_file, random_
 
 
 def make_reads(seq, max_length):
-    print(seq)
     n = int(len(seq) / max_length)
+    print(n, len(seq), max_length, len(seq) - max_length)
     # 4 = forward, reverse, complement, reverse complement
     starts = random.sample(range(len(seq) - max_length), n*4)
     reads = []
     for i, start in enumerate(starts):
-        read = seq[start:start+max_length]
+        read = str(seq[start:start+max_length])
         if i % 4 == 0:
             reads.append(read)
         elif i % 4 == 1:
             reads.append(read[::-1])
-        elif i % 4 == 1:
-            seq = Seq(read)
-            complement = seq.complement().seq
+        elif i % 4 == 2:
+            seqr = Seq(read)
+            complement = str(seqr.complement())
             reads.append(complement)
         else:
-            seq = Seq(read)
-            reverse_complement = seq.reverse_complement().seq
+            seqr = Seq(read)
+            reverse_complement = str(seqr.reverse_complement())
             reads.append(reverse_complement)
-    print(reads)
     return reads
 
 
