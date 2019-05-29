@@ -18,7 +18,7 @@ import pandas as pd
         help='path to the Genbank file of the plasmids')
 @click.option('-o', '--output_file', 'output_file', type=str, required=True,
         help='name of the output file w/ taxonomy annotations and sequences')
-def refseq_cds_extractor(plasmids_fna_path, plasmids_gbff_path, output_file):
+def plasmid_cds_extractor(plasmids_fna_path, plasmids_gbff_path, output_file):
     """Extract the taxonomy and CDS sequences from a GBFF and FNA file for plasmids"""
 
     start_time = datetime.now()
@@ -27,7 +27,7 @@ def refseq_cds_extractor(plasmids_fna_path, plasmids_gbff_path, output_file):
     print(f'reading GBFF file {plasmids_gbff_path}')
 
     f = open(output_file, 'w')
-    f.write('gff_file\tid\tkingdom\tphylum\tclass\torder\tfamily\tgenus\tproduct_id\tsequence\n')
+    f.write('gff_file\tid\tkingdom\tphylum\tclass\torder\tfamily\tgenus\tproduct_id\tsequence\tis_plasmid\n')
     f.flush()
 
     fna_dict = SeqIO.to_dict(SeqIO.parse(plasmids_fna_path, 'fasta'))
@@ -39,9 +39,9 @@ def refseq_cds_extractor(plasmids_fna_path, plasmids_gbff_path, output_file):
                 if feature.type == 'CDS':
                     if 'contig' in seq_record.annotations:
                         seq = 'NN'
-                        output.write(f"{filepath}\t{seq_record.id}\t{taxonomy[0] if len(taxonomy) > 0 else np.nan}\t{taxonomy[1] if len(taxonomy) > 1 else np.nan}\t{taxonomy[2] if len(taxonomy) > 2 else np.nan}\t{taxonomy[3] if len(taxonomy) > 3 else np.nan}\t{taxonomy[4] if len(taxonomy) > 4 else np.nan}\t{taxonomy[5] if len(taxonomy) > 5 else np.nan}\t{feature.qualifiers['protein_id'][0] if 'protein_id' in feature.qualifiers else np.nan}\t{seq}\n")
+                        f.write(f"{filepath}\t{seq_record.id}\t{taxonomy[0] if len(taxonomy) > 0 else np.nan}\t{taxonomy[1] if len(taxonomy) > 1 else np.nan}\t{taxonomy[2] if len(taxonomy) > 2 else np.nan}\t{taxonomy[3] if len(taxonomy) > 3 else np.nan}\t{taxonomy[4] if len(taxonomy) > 4 else np.nan}\t{taxonomy[5] if len(taxonomy) > 5 else np.nan}\t{feature.qualifiers['protein_id'][0] if 'protein_id' in feature.qualifiers else np.nan}\t{seq}\t1\n")
                     else:
-                        output.write(f"{filepath}\t{seq_record.id}\t{taxonomy[0] if len(taxonomy) > 0 else np.nan}\t{taxonomy[1] if len(taxonomy) > 1 else np.nan}\t{taxonomy[2] if len(taxonomy) > 2 else np.nan}\t{taxonomy[3] if len(taxonomy) > 3 else np.nan}\t{taxonomy[4] if len(taxonomy) > 4 else np.nan}\t{taxonomy[5] if len(taxonomy) > 5 else np.nan}\t{feature.qualifiers['protein_id'][0] if 'protein_id' in feature.qualifiers else np.nan}\t{feature.location.extract(seq_record).seq}\n")
+                        output.write(f"{filepath}\t{seq_record.id}\t{taxonomy[0] if len(taxonomy) > 0 else np.nan}\t{taxonomy[1] if len(taxonomy) > 1 else np.nan}\t{taxonomy[2] if len(taxonomy) > 2 else np.nan}\t{taxonomy[3] if len(taxonomy) > 3 else np.nan}\t{taxonomy[4] if len(taxonomy) > 4 else np.nan}\t{taxonomy[5] if len(taxonomy) > 5 else np.nan}\t{feature.qualifiers['protein_id'][0] if 'protein_id' in feature.qualifiers else np.nan}\t{feature.location.extract(seq_record).seq}\t1\n")
     except AttributeError:
         print(f'parsing of file {filepath} failed')
 
@@ -53,4 +53,4 @@ def refseq_cds_extractor(plasmids_fna_path, plasmids_gbff_path, output_file):
 
 
 if __name__ == '__main__':
-    refseq_cds_extractor()
+    plasmid_cds_extractor()
