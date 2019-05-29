@@ -28,10 +28,7 @@ import scipy.io
 @click.option('-s', '--random_seed', 'random_seed', type=int, default=42,
             show_default=True,
             help='random seed to be used for shuffling and sampling data partitions')
-@click.option('-c', '--category_field', 'category_field', type=str, default='is_plasmid',
-            show_default=True,
-            help='what field should be used as the classification category')
-def all_cds_filter(read_length, min_seq_length, output_file, input_file, random_seed, category_field):
+def all_cds_filter(read_length, min_seq_length, output_file, input_file, random_seed):
     """Trim and / or filter sequences by their length"""
 
     random.seed(random_seed)
@@ -75,7 +72,7 @@ def make_reads(row, max_length, df_reads):
             row['sequence'] = reverse_complement
         row['product_id'] = product_id + '_' + str(i)
         df_reads.append(row)
-    return reads
+    return None
 
 
 if __name__ == '__main__':
