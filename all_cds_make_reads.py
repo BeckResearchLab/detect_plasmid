@@ -25,10 +25,13 @@ import scipy.io
             help='name of the output file with reads')
 @click.option('-i', '--input_file', 'input_file', type=str, required=True,
             help='the location of the taxonomy annotated sequences')
-@click.option('-r', '--random_seed', 'random_seed', type=int, default=42,
+@click.option('-s', '--random_seed', 'random_seed', type=int, default=42,
             show_default=True,
             help='random seed to be used for shuffling and sampling data partitions')
-def all_cds_filter(read_length, min_seq_length, output_file, input_file, random_seed):
+@click.option('-c', '--category_field', 'category_field', type=str, default='is_plasmid',
+            show_default=True,
+            help='what field should be used as the classification category')
+def all_cds_filter(read_length, min_seq_length, output_file, input_file, random_seed, category_field):
     """Trim and / or filter sequences by their length"""
 
     random.seed(random_seed)
@@ -41,33 +44,37 @@ def all_cds_filter(read_length, min_seq_length, output_file, input_file, random_
     print(f'filtering {df.shape[0]} sequences for minimum sequence length of {min_seq_length}')
     df = df.loc[df.sequence.str.len() > min_seq_length]
 
+    df_reads = pd.DataFrame().reindex_like(df)
     print(f'randomly sampling {df.shape[0]} sequences to maximum length of {read_length}')
-    df["sequence"].apply(make_reads, max_length=read_length)
+    df.apply(make_reads, axis=1, max_length=read_length, df_reads=df_reads)
 
     print(f'saving {df.shape[0]} trimmed and filtered samples to {output_file}')
-    df.to_csv(output_file, sep='\t', index=False)
+    df_reads.to_csv(output_file, sep='\t', index=False)
 
 
-def make_reads(seq, max_length):
+def make_reads(row, max_length, df_reads):
+    seq = row['sequence']
+    product_id = row['product_id']
     n = int(len(seq) / max_length)
     #print(n, len(seq), max_length, len(seq) - max_length)
     # 4 = forward, reverse, complement, reverse complement
     starts = random.choices(range(len(seq) - max_length), k=n*4)
-    reads = []
     for i, start in enumerate(starts):
         read = str(seq[start:start+max_length])
         if i % 4 == 0:
-            reads.append(read)
+            row['sequence'] = read
         elif i % 4 == 1:
-            reads.append(read[::-1])
+            row['sequence'] = read[::-1]
         elif i % 4 == 2:
             seqr = Seq(read)
             complement = str(seqr.complement())
-            reads.append(complement)
+            row['sequence'] = complement
         else:
             seqr = Seq(read)
             reverse_complement = str(seqr.reverse_complement())
-            reads.append(reverse_complement)
+            row['sequence'] = reverse_complement
+        row['product_id'] = product_id + '_' + str(i)
+        df_reads.append(row)
     return reads
 
 
