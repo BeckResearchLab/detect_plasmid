@@ -38,6 +38,7 @@ def plasmid_cds_extractor(plasmids_fna_path, plasmids_gbff_path, output_file):
             for feature in seq_record.features:
                 if feature.type == 'CDS':
                     if 'contig' in seq_record.annotations:
+                        print(seq_record.annotations['contig'])
                         seq = 'NN'
                         f.write(f"{plasmids_gbff_path}\t{seq_record.id}\t{taxonomy[0] if len(taxonomy) > 0 else np.nan}\t{taxonomy[1] if len(taxonomy) > 1 else np.nan}\t{taxonomy[2] if len(taxonomy) > 2 else np.nan}\t{taxonomy[3] if len(taxonomy) > 3 else np.nan}\t{taxonomy[4] if len(taxonomy) > 4 else np.nan}\t{taxonomy[5] if len(taxonomy) > 5 else np.nan}\t{feature.qualifiers['protein_id'][0] if 'protein_id' in feature.qualifiers else np.nan}\t{seq}\t1\n")
                     else:
