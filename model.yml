@@ -1,0 +1,57 @@
+---
+ops: [train, evaluate]
+model: {
+    path: /work/dacb/detect_hgt/deeperdeepsea.py,
+    class: DeeperDeepSEA,
+    class_args: {
+        sequence_length: 750,
+        n_targets: 1,
+    },
+    #non_strand_specific: mean
+}
+sampler: !obj:selene_sdk.samplers.MultiFileSampler {
+    train_sampler: !obj:selene_sdk.samplers.file_samplers.MatFileSampler {
+        filepath: /work/dacb/detect_hgt/refseq_cds_train.mat,
+        sequence_key: sequence,
+        targets_key: target,
+        sequence_batch_axis: 0,
+        sequence_alphabet_axis: 2,
+        targets_batch_axis: 1,
+        shuffle: False
+    },
+    validate_sampler: !obj:selene_sdk.samplers.file_samplers.MatFileSampler {
+        filepath: /work/dacb/detect_hgt/refseq_cds_valid.mat,
+        sequence_key: sequence,
+        targets_key: target,
+        sequence_batch_axis: 0,
+        sequence_alphabet_axis: 2,
+        targets_batch_axis: 1,
+        shuffle: False
+    },
+    test_sampler: !obj:selene_sdk.samplers.file_samplers.MatFileSampler {
+        filepath: /work/dacb/detect_hgt/refseq_cds_test.mat,
+        sequence_key: sequence,
+        targets_key: target,
+        sequence_batch_axis: 0,
+        sequence_alphabet_axis: 2,
+        targets_batch_axis: 1,
+        shuffle: False
+    },
+    features: notEnterobacteriaceae
+}
+train_model: !obj:selene_sdk.TrainModel {
+    batch_size: 64,
+    max_steps: 8000,  # update this value for longer training
+    report_stats_every_n_steps: 100,
+    #n_validation_samples: 32000,
+    #n_test_samples: 120000,
+    cpu_n_threads: 48,
+    use_cuda: False,
+    data_parallel: True,
+    logging_verbosity: 2
+}
+random_seed: 42
+output_dir: ./training_outputs
+create_subdirectory: False
+#load_test_set: False
+...
