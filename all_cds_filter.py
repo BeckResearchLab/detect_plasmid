@@ -28,7 +28,7 @@ import scipy.io
 def all_cds_filter(trim_length, min_seq_length, output_file, input_file, random_seed):
     """Trim and / or filter sequences by their length"""
 
-    random.set(random_seed)
+    random.seed(random_seed)
 
     if trim_length <= 0 and min_seq_length <= 0:
         print('no trim length or minimum sequence filter length specified')
@@ -42,14 +42,14 @@ def all_cds_filter(trim_length, min_seq_length, output_file, input_file, random_
         df = df.loc[df.sequence.str.len() >= min_seq_length]
     if trim_length > 0:
         print(f'randomly sampling {df.shape[0]} sequences to maximum length of {trim_length}')
-        df["sequence"] = df["sequence"].apply(random_substring_sample, trim_length)
+        df["sequence"] = df["sequence"].apply(random_substring_sample, max_length=trim_length)
 
     print(f'saving {df.shape[0]} trimmed and filtered samples to {output_file}')
     df.to_csv(output_file, sep='\t', index=False)
 
 
 def random_substring_sample(seq, max_length):
-    i = random.sample(range(len(seq) - max_length), 1)
+    i = random.randint(0, len(seq) - max_length)
     return seq[i:i+max_length]
 
 
