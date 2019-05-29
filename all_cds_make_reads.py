@@ -39,7 +39,7 @@ def all_cds_filter(read_length, min_seq_length, output_file, input_file, random_
     if min_seq_length == 0:
         min_seq_length = read_length
     print(f'filtering {df.shape[0]} sequences for minimum sequence length of {min_seq_length}')
-    df = df.loc[df.sequence.str.len() >= min_seq_length]
+    df = df.loc[df.sequence.str.len() > min_seq_length]
 
     print(f'randomly sampling {df.shape[0]} sequences to maximum length of {read_length}')
     df["sequence"].apply(make_reads, max_length=read_length)
@@ -50,9 +50,9 @@ def all_cds_filter(read_length, min_seq_length, output_file, input_file, random_
 
 def make_reads(seq, max_length):
     n = int(len(seq) / max_length)
-    print(n, len(seq), max_length, len(seq) - max_length)
+    #print(n, len(seq), max_length, len(seq) - max_length)
     # 4 = forward, reverse, complement, reverse complement
-    starts = random.sample(range(len(seq) - max_length), n*4)
+    starts = random.choices(range(len(seq) - max_length), k=n*4)
     reads = []
     for i, start in enumerate(starts):
         read = str(seq[start:start+max_length])
