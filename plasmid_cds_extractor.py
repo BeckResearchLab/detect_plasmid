@@ -38,7 +38,7 @@ def plasmid_cds_extractor(plasmids_fna_path, plasmids_gbff_path, output_file):
             if 'contig' in seq_record.annotations:
                 seqid = 'ref|' + seq_record.id + '|'
                 if seqid in fna_dict:
-                    seq_record.seq = fna_dict[seqid]
+                    seq_record.seq = fna_dict[seqid].seq
                 else:
                     print(f'sequence {seqid} is missing from FASTA, skipping this record')
                     continue
