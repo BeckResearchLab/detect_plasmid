@@ -35,14 +35,16 @@ def plasmid_cds_extractor(plasmids_fna_path, plasmids_gbff_path, output_file):
     try:
         for seq_record in SeqIO.parse(plasmids_gbff_path, 'genbank'):
             taxonomy = seq_record.annotations['taxonomy']
+            if 'contig' in seq_record.annotations:
+                seqid = 'ref|' + seq_record.id + '|'
+                if seqid in fna_dict:
+                    seq_record.seq = fna_dict[seqid]
+                else:
+                    print(f'sequence {seqid} is missing from FASTA, skipping this record')
+                    continue
             for feature in seq_record.features:
                 if feature.type == 'CDS':
-                    if 'contig' in seq_record.annotations:
-                        print(seq_record.annotations['contig'])
-                        seq = 'NN'
-                        f.write(f"{plasmids_gbff_path}\t{seq_record.id}\t{taxonomy[0] if len(taxonomy) > 0 else np.nan}\t{taxonomy[1] if len(taxonomy) > 1 else np.nan}\t{taxonomy[2] if len(taxonomy) > 2 else np.nan}\t{taxonomy[3] if len(taxonomy) > 3 else np.nan}\t{taxonomy[4] if len(taxonomy) > 4 else np.nan}\t{taxonomy[5] if len(taxonomy) > 5 else np.nan}\t{feature.qualifiers['protein_id'][0] if 'protein_id' in feature.qualifiers else np.nan}\t{seq}\t1\n")
-                    else:
-                        f.write(f"{plasmids_gbff_path}\t{seq_record.id}\t{taxonomy[0] if len(taxonomy) > 0 else np.nan}\t{taxonomy[1] if len(taxonomy) > 1 else np.nan}\t{taxonomy[2] if len(taxonomy) > 2 else np.nan}\t{taxonomy[3] if len(taxonomy) > 3 else np.nan}\t{taxonomy[4] if len(taxonomy) > 4 else np.nan}\t{taxonomy[5] if len(taxonomy) > 5 else np.nan}\t{feature.qualifiers['protein_id'][0] if 'protein_id' in feature.qualifiers else np.nan}\t{feature.location.extract(seq_record).seq}\t1\n")
+                    f.write(f"{plasmids_gbff_path}\t{seq_record.id}\t{taxonomy[0] if len(taxonomy) > 0 else np.nan}\t{taxonomy[1] if len(taxonomy) > 1 else np.nan}\t{taxonomy[2] if len(taxonomy) > 2 else np.nan}\t{taxonomy[3] if len(taxonomy) > 3 else np.nan}\t{taxonomy[4] if len(taxonomy) > 4 else np.nan}\t{taxonomy[5] if len(taxonomy) > 5 else np.nan}\t{feature.qualifiers['protein_id'][0] if 'protein_id' in feature.qualifiers else np.nan}\t{feature.location.extract(seq_record).seq}\t1\n")
     except AttributeError:
         print(f'parsing of file {filepath} failed')
 
