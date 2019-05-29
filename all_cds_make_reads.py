@@ -40,8 +40,8 @@ def all_cds_filter(read_length, min_seq_length, output_file, input_file, random_
         print(f'filtering {df.shape[0]} sequences for minimum sequence length of {min_seq_length}')
         df = df.loc[df.sequence.str.len() >= min_seq_length]
 
-    print(f'randomly sampling {df.shape[0]} sequences to maximum length of {trim_length}')
-    df["sequence"].apply(make_reads, max_length=trim_length)
+    print(f'randomly sampling {df.shape[0]} sequences to maximum length of {read_length}')
+    df["sequence"].apply(make_reads, max_length=read_length)
 
     print(f'saving {df.shape[0]} trimmed and filtered samples to {output_file}')
     df.to_csv(output_file, sep='\t', index=False)
