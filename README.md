@@ -1,4 +1,4 @@
-# detect_hgt
+# detect_plasmid
 
 ---
 
