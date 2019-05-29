@@ -1,0 +1,28 @@
+---
+ops: [analyze]
+model: {
+    path: /work/dacb/detect_hgt/deeperdeepsea.py,
+    class: DeeperDeepSEA,
+    class_args: {
+        sequence_length: 750,
+        n_targets: 1,
+    },
+    #non_strand_specific: mean
+}
+analyze_sequences: !obj:selene_sdk.predict.AnalyzeSequences {
+    trained_model_path: /work/dacb/detect_hgt/training_outputs/best_model.pth.tar,
+    sequence_length: 750,
+    features: !obj:selene_sdk.utils.load_features_list {
+        input_path: /work/dacb/detect_hgt/features.txt
+    },
+    batch_size: 64,
+    use_cuda: False,
+    write_mem_limit: 150000
+}
+prediction: {
+    input_path: /work/dacb/detect_hgt/predict_sequences/seqs.fa,
+    output_dir: /work/dacb/detect_hgt/predict_sequences,
+    output_format: tsv
+}
+random_seed: 42
+...
