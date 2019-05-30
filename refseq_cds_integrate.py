@@ -15,6 +15,8 @@ import scipy.io
             help='the location of the refseq taxonomy annotated sequences')
 @click.option('-p', '--plasmid_input_file', 'plasmid_input_file', type=str, required=True,
             help='the location of the plasmid taxonomy annotated sequences')
+@click.option('-m', '--min_seq_len', 'min_seq_len', type=str, default=0, show_default=True,
+            help='the minimum sequence length to be included for integration')
 def refseq_cds_integrate(output_file, refseq_input_file, plasmid_input_file):
     """Integrate refseq and plasmid CDS into a single file"""
 
@@ -27,7 +29,11 @@ def refseq_cds_integrate(output_file, refseq_input_file, plasmid_input_file):
 
     df = df_plasmid.append(df_refseq)
 
-    print(f'saving {df.shape[0]} trimmed and filtered samples to {output_file}')
+    if min_seq_length > 0:
+        print(f'filtering {df.shape[0]} sequences for minimum sequence length of {min_seq_length}')
+        df = df.loc[df.sequence.str.len() >= min_seq_length]
+
+    print(f'saving {df.shape[0]} samples to {output_file}')
     df.to_csv(output_file, sep='\t', index=False)
 
 
