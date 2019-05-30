@@ -17,7 +17,7 @@ import scipy.io
             help='the location of the plasmid taxonomy annotated sequences')
 @click.option('-m', '--min_seq_len', 'min_seq_len', type=str, default=0, show_default=True,
             help='the minimum sequence length to be included for integration')
-def refseq_cds_integrate(output_file, refseq_input_file, plasmid_input_file):
+def refseq_cds_integrate(output_file, refseq_input_file, plasmid_input_file, min_seq_len):
     """Integrate refseq and plasmid CDS into a single file"""
 
     print(f'reading cds tsv data file {plasmid_input_file}')

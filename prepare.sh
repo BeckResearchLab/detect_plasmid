@@ -14,7 +14,7 @@ fi
 
 if [ ! -e all_cds.tsv ]; then
 	./refseq_cds_integrate.py --refseq_input_file /work/dacb/detect_hgt/${MIN_SEQ_LEN}bp/refseq_cds_filtered.tsv \
-			--plasmid_input_file plasmids_cds.tsv --min_seq_len 300 \
+			--plasmid_input_file plasmid_cds.tsv --min_seq_len 300 \
 			--output_file all_cds.tsv
 fi
 
