@@ -41,38 +41,43 @@ def all_cds_filter(read_length, min_seq_length, output_file, input_file, random_
     print(f'filtering {df.shape[0]} sequences for minimum sequence length of {min_seq_length}')
     df = df.loc[df.sequence.str.len() > min_seq_length]
 
-    df_reads = pd.DataFrame().reindex_like(df)
-    print(f'randomly sampling {df.shape[0]} sequences to maximum length of {read_length}')
-    df.apply(make_reads, axis=1, max_length=read_length, df_reads=df_reads)
+    print(f'generating reads from {df.shape[0]} sequences with length of {read_length}')
+    df_reads = make_reads(df, read_length)
 
-    print(f'saving {df.shape[0]} trimmed and filtered samples to {output_file}')
+    print(f'saving {df_reads.shape[0]} trimmed and filtered samples to {output_file}')
     df_reads.to_csv(output_file, sep='\t', index=False)
 
 
-def make_reads(row, max_length, df_reads):
-    seq = row['sequence']
-    product_id = row['product_id']
-    n = int(len(seq) / max_length)
-    #print(n, len(seq), max_length, len(seq) - max_length)
-    # 4 = forward, reverse, complement, reverse complement
-    starts = random.choices(range(len(seq) - max_length), k=n*4)
-    for i, start in enumerate(starts):
-        read = str(seq[start:start+max_length])
-        if i % 4 == 0:
-            row['sequence'] = read
-        elif i % 4 == 1:
-            row['sequence'] = read[::-1]
-        elif i % 4 == 2:
-            seqr = Seq(read)
-            complement = str(seqr.complement())
-            row['sequence'] = complement
-        else:
-            seqr = Seq(read)
-            reverse_complement = str(seqr.reverse_complement())
-            row['sequence'] = reverse_complement
-        row['product_id'] = product_id + '_' + str(i)
-        df_reads.append(row)
-    return None
+def make_reads(df_source, max_length):
+    df_reads = pd.DataFrame().reindex_like(df_source)
+    df_reads.drop(df_reads.index, inplace=True)
+    reads = []
+    # not using apply here because in pandas .24 this wouldn't properly reduce
+    for index, row in df_source.iterrows():
+        seq = row['sequence']
+        product_id = str(row['product_id'])
+        n = int(len(seq) / max_length)
+        #print(n, len(seq), max_length, len(seq) - max_length)
+        # 4 = forward, reverse, complement, reverse complement
+        starts = random.choices(range(len(seq) - max_length), k=n*4)
+        for i, start in enumerate(starts):
+            read_row = row
+            read_row['product_id'] = product_id + '_' + str(i)
+            read = str(seq[start:start+max_length])
+            if i % 4 == 0:
+                read_row['sequence'] = read
+            elif i % 4 == 1:
+                read_row['sequence'] = read[::-1]
+            elif i % 4 == 2:
+                seqr = Seq(read)
+                complement = str(seqr.complement())
+                read_row['sequence'] = complement
+            else:
+                seqr = Seq(read)
+                reverse_complement = str(seqr.reverse_complement())
+                read_row['sequence'] = reverse_complement
+            reads.append(read_row)
+    return df_reads.append(pd.DataFrame(reads, columns=df_source.columns)).reset_index()
 
 
 if __name__ == '__main__':
