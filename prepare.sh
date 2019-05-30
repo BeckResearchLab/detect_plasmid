@@ -23,12 +23,14 @@ if [ ! -e balanced_cds.tsv ]; then
 			--positive_samples $CLASS_SAMPLES --random_seed 42
 fi
 
-exit
+if [ ! -e balanced_reads.tsv ]; then
+	./all_cds_make_reads.py --read_length 300 --input_file balanced_cds.tsv \
+			--output_file balanced_reads.tsv --random_seed 42
+fi
 
-if [ ! -e refseq_cds_train.mat -o ! -e refseq_cds_valid.mat -o ! -e refseq_cds_test.mat ]; then
-	./refseq_cds_savemat.py --input_file refseq_cds_filtered_balanced.tsv \
-			--tax_level family --taxa Enterobacteriaceae \
+if [ ! -e all_cds_train.mat -o ! -e all_cds_valid.mat -o ! -e all_cds_test.mat ]; then
+	./all_cds_savemat.py --input_file balanced_cds.tsv \
 			--train_frac 0.7 --valid_frac 0.2 --test_frac 0.1 \
-			--train_file refseq_cds_train.mat --valid_file refseq_cds_valid.mat \
-			--test_file refseq_cds_test.mat
+			--train_file all_cds_train.mat --valid_file all_cds_valid.mat \
+			--test_file all_cds_test.mat
 fi

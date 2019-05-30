@@ -20,7 +20,7 @@ import scipy.io
             'reverse complement')
 @click.option('-m', '--min_seq_length', 'min_seq_length', default=0, type=int,
             show_default=True,
-            help='should sequences shortern than this be discarded (0 = disabled)')
+            help='should sequences shorter than this be discarded (0 = disabled)')
 @click.option('-o', '--output_file', 'output_file', type=str, required=True,
             help='name of the output file with reads')
 @click.option('-i', '--input_file', 'input_file', type=str, required=True,
