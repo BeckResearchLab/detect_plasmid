@@ -6,7 +6,7 @@ MIN_SEQ_LEN=300
 #CLASS_SAMPLES=100000
 
 ./plasmid_cds_extractor.py -f plasmids/ncbi_plasmid.fna -g plasmids/ncbi_plasmid.gbff -o plasmid_cds.tsv
-./refseq_cds_integrate
+./refseq_cds_integrate.py -r /work/dacb/detect_hgt/300bp/refseq_cds_filtered.tsv -p plasmid_cds.tsv -o all_cds.tsv
 ./cds_balance
 ./all_cds_filter
 

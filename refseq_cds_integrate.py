@@ -23,7 +23,7 @@ def refseq_cds_integrate(output_file, refseq_input_file, plasmid_input_file):
 
     print(f'reading cds tsv data file {refseq_input_file}')
     df_refseq = pd.read_csv(refseq_input_file, sep='\t')
-    df_refseq.assign(is_plasmid=0)
+    df_refseq['is_plasmid'] = 0
 
     df = df_plasmid.append(df_refseq)
 
