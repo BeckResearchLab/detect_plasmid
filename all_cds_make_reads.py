@@ -44,7 +44,8 @@ def all_cds_filter(read_length, min_seq_length, output_file, input_file, random_
     print(f'generating reads from {df.shape[0]} sequences with length of {read_length}')
     df_reads = make_reads(df, read_length)
 
-    print(f'saving {df_reads.shape[0]} trimmed and filtered samples to {output_file}')
+    print(f'saving {df_reads.shape[0]} reads to {output_file}')
+    df_reads.drop(columns=['index'])
     df_reads.to_csv(output_file, sep='\t', index=False)
 
 
@@ -53,6 +54,7 @@ def make_reads(df_source, max_length):
     df_reads.drop(df_reads.index, inplace=True)
     reads = []
     # not using apply here because in pandas .24 this wouldn't properly reduce
+    count = 0
     for index, row in df_source.iterrows():
         seq = row['sequence']
         product_id = str(row['product_id'])
@@ -77,6 +79,10 @@ def make_reads(df_source, max_length):
                 reverse_complement = str(seqr.reverse_complement())
                 read_row['sequence'] = reverse_complement
             reads.append(read_row)
+            count = count + 1
+            if count > 0 and count % 1000000 == 0:
+                print(f"{count} reads generated")
+    print(f"assembling data frame from {count} reads")
     return df_reads.append(pd.DataFrame(reads, columns=df_source.columns)).reset_index()
 
 
