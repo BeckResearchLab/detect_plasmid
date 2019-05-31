@@ -32,6 +32,8 @@ def _load_hdf5_file(filepath, sequence_key, targets_key=None):
     targets = None
     if targets_key:
         targets = hdf5[targets_key]
+    print(f'{sequence_key} dataset has shape {sequences.shape}')
+    print(f'{targets_key} dataset has shape {targets.shape}')
     return (sequences, targets, hdf5)
 
 
@@ -153,10 +155,8 @@ class Hdf5FileSampler(FileSampler):
                 targets = self._sample_tgts[use_indices, :].astype(float)
             else:
                 targets = self._sample_tgts[:, use_indices].astype(float)
-                targets = np.transpose(
-                    targets, (1, 0))
-            return (sequences, targets)
-        return sequences,
+                targets = np.transpose(targets, (1, 0))
+        return (sequences, targets)
 
     def get_data(self, batch_size, n_samples=None):
         """

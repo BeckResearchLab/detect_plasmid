@@ -13,7 +13,7 @@ def df_named_subset_save_hdf5(title, outfile, frac, df, start, end):
     sequences = np.array(df.iloc[range(start, end)]['sequence'].values.tolist())
     hdf5.create_dataset('sequence', data=sequences)
     del sequences
-    targets = np.array(df.iloc[range(start, end)]['target'].values.tolist())
+    targets = np.array([df.iloc[range(start, end)]['target'].values.tolist()])
     hdf5.create_dataset('target', data=targets)
     hdf5.close()
 
