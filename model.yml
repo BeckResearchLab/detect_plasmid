@@ -10,7 +10,7 @@ model: {
     #non_strand_specific: mean
 }
 sampler: !obj:selene_sdk.samplers.MultiFileSampler {
-    train_sampler: !obj:selene_sdk.samplers.file_samplers.MatFileSampler {
+    train_sampler: !obj:hdf5_sampler.Hdf5FileSampler {
         filepath: /work/dacb/detect_hgt/300bp/refseq_cds_train.mat,
         sequence_key: sequence,
         targets_key: target,
@@ -19,7 +19,7 @@ sampler: !obj:selene_sdk.samplers.MultiFileSampler {
         targets_batch_axis: 1,
         shuffle: False
     },
-    validate_sampler: !obj:selene_sdk.samplers.file_samplers.MatFileSampler {
+    validate_sampler: !obj:hdf5_sampler.Hdf5FileSampler {
         filepath: /work/dacb/detect_hgt/300bp/refseq_cds_valid.mat,
         sequence_key: sequence,
         targets_key: target,
@@ -28,7 +28,7 @@ sampler: !obj:selene_sdk.samplers.MultiFileSampler {
         targets_batch_axis: 1,
         shuffle: False
     },
-    test_sampler: !obj:selene_sdk.samplers.file_samplers.MatFileSampler {
+    test_sampler: !obj:hdf5_sampler.Hdf5FileSampler {
         filepath: /work/dacb/detect_hgt/300bp/refseq_cds_test.mat,
         sequence_key: sequence,
         targets_key: target,
