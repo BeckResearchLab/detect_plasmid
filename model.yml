@@ -1,7 +1,7 @@
 ---
 ops: [train, evaluate]
 model: {
-    path: /work/dacb/detect_hgt/300bp/model.py,
+    path: /work/dacb/detect_plasmid/model.py,
     class: DeeperDeepSEA,
     class_args: {
         sequence_length: 300,
@@ -16,7 +16,7 @@ sampler: !obj:selene_sdk.samplers.MultiFileSampler {
         targets_key: target,
         sequence_batch_axis: 0,
         sequence_alphabet_axis: 2,
-        targets_batch_axis: 1,
+        targets_batch_axis: 0,
         shuffle: False
     },
     validate_sampler: !obj:hdf5_sampler.Hdf5FileSampler {
@@ -25,7 +25,7 @@ sampler: !obj:selene_sdk.samplers.MultiFileSampler {
         targets_key: target,
         sequence_batch_axis: 0,
         sequence_alphabet_axis: 2,
-        targets_batch_axis: 1,
+        targets_batch_axis: 0,
         shuffle: False
     },
     test_sampler: !obj:hdf5_sampler.Hdf5FileSampler {
@@ -34,11 +34,11 @@ sampler: !obj:selene_sdk.samplers.MultiFileSampler {
         targets_key: target,
         sequence_batch_axis: 0,
         sequence_alphabet_axis: 2,
-        targets_batch_axis: 1,
+        targets_batch_axis: 0,
         shuffle: False
     },
     features: !obj:selene_sdk.utils.load_features_list {
-        input_path: /work/dacb/detect_hgt/features.txt
+        input_path: /work/dacb/detect_plasmid/features.txt
     }
 }
 train_model: !obj:selene_sdk.TrainModel {
