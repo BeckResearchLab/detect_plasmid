@@ -28,7 +28,7 @@ import scipy.io
 @click.option('-s', '--random_seed', 'random_seed', type=int, default=42,
             show_default=True,
             help='random seed to be used for shuffling and sampling data partitions')
-def all_cds_filter(read_length, min_seq_length, output_file, input_file, random_seed):
+def all_cds_make_reads(read_length, min_seq_length, output_file, input_file, random_seed):
     """Trim and / or filter sequences by their length"""
 
     random.seed(random_seed)
@@ -40,16 +40,19 @@ def all_cds_filter(read_length, min_seq_length, output_file, input_file, random_
         min_seq_length = read_length
     print(f'filtering {df.shape[0]} sequences for minimum sequence length of {min_seq_length}')
     df = df.loc[df.sequence.str.len() > min_seq_length]
+    update_product_id = False
+    if 'product_id' in df.columns:
+        update_product_id = True
 
     print(f'generating reads from {df.shape[0]} sequences with length of {read_length}')
-    df_reads = make_reads(df, read_length)
+    df_reads = make_reads(df, read_length, update_product_id)
 
     print(f'saving {df_reads.shape[0]} reads to {output_file}')
     df_reads.drop(columns=['index'])
     df_reads.to_csv(output_file, sep='\t', index=False)
 
 
-def make_reads(df_source, max_length):
+def make_reads(df_source, max_length, update_product_id):
     df_reads = pd.DataFrame().reindex_like(df_source)
     df_reads.drop(df_reads.index, inplace=True)
     reads = []
@@ -57,28 +60,34 @@ def make_reads(df_source, max_length):
     count = 0
     for index, row in df_source.iterrows():
         seq = row['sequence']
-        product_id = str(row['product_id'])
+        if update_product_id:
+            product_id = str(row['product_id'])
         n = int(len(seq) / max_length)
-        #print(n, len(seq), max_length, len(seq) - max_length)
         # 4 = forward, reverse, complement, reverse complement
         starts = random.choices(range(len(seq) - max_length), k=n*4)
         for i, start in enumerate(starts):
             read_row = row
-            read_row['product_id'] = product_id + '_' + str(i)
+            if update_product_id:
+                read_row['product_id'] = product_id + '_' + str(i)
             read = str(seq[start:start+max_length])
             if i % 4 == 0:
+                # forward
                 read_row['sequence'] = read
             elif i % 4 == 1:
+                # reverse
                 read_row['sequence'] = read[::-1]
             elif i % 4 == 2:
+                # complement
                 seqr = Seq(read)
                 complement = str(seqr.complement())
                 read_row['sequence'] = complement
             else:
+                # reverse complement
                 seqr = Seq(read)
                 reverse_complement = str(seqr.reverse_complement())
                 read_row['sequence'] = reverse_complement
             reads.append(read_row)
+
             count = count + 1
             if count > 0 and count % 1000000 == 0:
                 print(f"{count} reads generated")
@@ -87,4 +96,4 @@ def make_reads(df_source, max_length):
 
 
 if __name__ == '__main__':
-    all_cds_filter()
+    all_cds_make_reads()

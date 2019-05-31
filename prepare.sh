@@ -13,7 +13,7 @@ if [ ! -e plasmid_cds.tsv ]; then
 fi
 
 if [ ! -e all_cds.tsv ]; then
-	./refseq_cds_integrate.py --refseq_input_file /work/dacb/detect_hgt/${MIN_SEQ_LEN}bp/refseq_cds_filtered.tsv \
+	./refseq_cds_integrate.py --refseq_input_file /work/dacb/detect_hgt/refseq_cds.tsv \
 			--plasmid_input_file plasmid_cds.tsv --min_seq_len 300 \
 			--output_file all_cds.tsv
 fi
@@ -29,7 +29,7 @@ if [ ! -e balanced_reads.tsv ]; then
 fi
 
 if [ ! -e all_cds_train.mat -o ! -e all_cds_valid.mat -o ! -e all_cds_test.mat ]; then
-	./all_cds_savemat.py --input_file balanced_cds.tsv \
+	./all_cds_savemat.py --input_file balanced_reads.tsv \
 			--train_frac 0.7 --valid_frac 0.2 --test_frac 0.1 \
 			--train_file all_cds_train.mat --valid_file all_cds_valid.mat \
 			--test_file all_cds_test.mat
