@@ -3,7 +3,7 @@
 REFSEQ_PATH=/work/data/refseq
 THREADS=24
 MIN_SEQ_LEN=300
-CLASS_SAMPLES=100000
+CLASS_SAMPLES=1000000
 
 
 
@@ -28,9 +28,9 @@ if [ ! -e balanced_reads.tsv ]; then
 			--output_file balanced_reads.tsv --random_seed 42
 fi
 
-if [ ! -e all_cds_train.mat -o ! -e all_cds_valid.mat -o ! -e all_cds_test.mat ]; then
-	./all_cds_savemat.py --input_file balanced_reads.tsv \
+if [ ! -e all_cds_train.h5 -o ! -e all_cds_valid.h5 -o ! -e all_cds_test.h5 ]; then
+	./all_cds_save_hdf5.py --input_file balanced_reads.tsv \
 			--train_frac 0.7 --valid_frac 0.2 --test_frac 0.1 \
-			--train_file all_cds_train.mat --valid_file all_cds_valid.mat \
-			--test_file all_cds_test.mat
+			--train_file all_cds_train.h5 --valid_file all_cds_valid.h5 \
+			--test_file all_cds_test.h5
 fi
