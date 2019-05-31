@@ -31,7 +31,7 @@ fi
 
 if [ ! -e all_cds_train.h5 -o ! -e all_cds_valid.h5 -o ! -e all_cds_test.h5 ]; then
 	./all_cds_save_hdf5.py --input_file balanced_reads.tsv \
-			--train_frac 0.7 --valid_frac 0.2 --test_frac 0.1 \
+			--train_frac 0.91 --valid_frac 0.01 --test_frac 0.08 \
 			--train_file all_cds_train.h5 --valid_file all_cds_valid.h5 \
 			--test_file all_cds_test.h5
 fi
