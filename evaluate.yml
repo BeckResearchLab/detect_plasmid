@@ -1,7 +1,7 @@
 ---
 ops: [evaluate]
 model: {
-    path: /work/dacb/detect_hgt/300bp/model.py,
+    path: /work/dacb/detect_plasmid/model.py,
     class: DeeperDeepSEA,
     class_args: {
         sequence_length: 300,
@@ -9,8 +9,8 @@ model: {
     },
     #non_strand_specific: mean
 }
-sampler: !obj:selene_sdk.samplers.file_samplers.MatFileSampler {
-    filepath: /work/dacb/detect_hgt/300bp/refseq_cds_test.mat,
+sampler: !obj:hdf5_sample.Hdf5FileSampler {
+    filepath: /work/dacb/detect_plasmid/all_cds_test.mat,
     sequence_key: sequence,
     targets_key: target,
     sequence_batch_axis: 0,
@@ -19,9 +19,9 @@ sampler: !obj:selene_sdk.samplers.file_samplers.MatFileSampler {
     shuffle: False
 }
 evaluate_model: !obj:selene_sdk.EvaluateModel {
-    trained_model_path: /work/dacb/detect_hgt/300bp/training_outputs/best_model.pth.tar,
+    trained_model_path: /work/dacb/detect_plasmid/training_outputs/best_model.pth.tar,
     features: !obj:selene_sdk.utils.load_features_list {
-        input_path: /work/dacb/detect_hgt/features.txt
+        input_path: /work/dacb/detect_plasmid/features.txt
     },
     batch_size: 64,
     report_gt_feature_n_positives: 10,
