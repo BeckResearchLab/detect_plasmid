@@ -7,13 +7,15 @@ import numpy.testing
 import pandas as pd
 import selene_sdk.sequences
 
-
 def df_named_subset_save_hdf5(title, outfile, frac, df, start, end):
     print(f"saving {title} data to {outfile} ({frac * 100.}% = {len(range(start, end))} samples)")
+    hdf5 = h5py.File(outfile, 'w')
     sequences = np.array(df.iloc[range(start, end)]['sequence'].values.tolist())
+    hdf5.create_dataset('sequence', data=sequences)
+    del sequences
     targets = np.array(df.iloc[range(start, end)]['target'].values.tolist())
-    scipy.io.savemat(outfile, { 'sequence' : sequences,
-        'target' : targets})
+    hdf5.create_dataset('target', data=targets)
+    hdf5.close()
 
 
 @click.command()
@@ -59,7 +61,7 @@ def all_cds_save_hdf5(input_file, train_file, valid_file, test_file, train_frac,
     df_named_subset_save_hdf5('training', train_file, train_frac, df, 0, max_train)
     valid_i = int(valid_frac * df.shape[0])
     df_named_subset_save_hdf5('validation', valid_file, valid_frac, df, max_train, max_train+valid_i)
-    df_named_subset_save_hsf5('test', test_file, test_frac, df, max_train+valid_i, df.shape[0])
+    df_named_subset_save_hdf5('test', test_file, test_frac, df, max_train+valid_i, df.shape[0])
 
 
 if __name__ == '__main__':
