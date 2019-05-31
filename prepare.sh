@@ -3,8 +3,9 @@
 REFSEQ_PATH=/work/data/refseq
 THREADS=24
 MIN_SEQ_LEN=300
-CLASS_SAMPLES=1000000
-
+RANDOM_SEED=42
+# no limit on samples, use all positives
+CLASS_SAMPLES=0
 
 
 if [ ! -e plasmid_cds.tsv ]; then
@@ -14,18 +15,18 @@ fi
 
 if [ ! -e all_cds.tsv ]; then
 	./refseq_cds_integrate.py --refseq_input_file /work/dacb/detect_hgt/refseq_cds.tsv \
-			--plasmid_input_file plasmid_cds.tsv --min_seq_len 300 \
+			--plasmid_input_file plasmid_cds.tsv --min_seq_len $MIN_SEQ_LEN \
 			--output_file all_cds.tsv
 fi
 
 if [ ! -e balanced_cds.tsv ]; then
 	./all_cds_balance.py --input_file all_cds.tsv --output_file balanced_cds.tsv \
-			--positive_samples $CLASS_SAMPLES --random_seed 42
+			--positive_samples $CLASS_SAMPLES --random_seed $RANDOM_SEED
 fi
 
 if [ ! -e balanced_reads.tsv ]; then
-	./all_cds_make_reads.py --read_length 300 --input_file balanced_cds.tsv \
-			--output_file balanced_reads.tsv --random_seed 42
+	./all_cds_make_reads.py --read_length $MIN_SEQ_LEN --input_file balanced_cds.tsv \
+			--output_file balanced_reads.tsv --random_seed $RANDOM_SEED
 fi
 
 if [ ! -e all_cds_train.h5 -o ! -e all_cds_valid.h5 -o ! -e all_cds_test.h5 ]; then
