@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 
 import click
+import h5py
 import numpy as np
 import numpy.testing
 import pandas as pd
 import selene_sdk.sequences
-import scipy.io
 
 
-def df_named_subset_savemat(title, outfile, frac, df, start, end):
+def df_named_subset_save_hdf5(title, outfile, frac, df, start, end):
     print(f"saving {title} data to {outfile} ({frac * 100.}% = {len(range(start, end))} samples)")
     sequences = np.array(df.iloc[range(start, end)]['sequence'].values.tolist())
     targets = np.array(df.iloc[range(start, end)]['target'].values.tolist())
@@ -34,7 +34,7 @@ def df_named_subset_savemat(title, outfile, frac, df, start, end):
 @click.option('-e', '--test_frac', 'test_frac', type=float, default=0.1,
                 show_default=True,
                 help='the fraction of samples to use for the test data set')
-def refseq_cds_savemat(input_file, train_file, valid_file, test_file, train_frac, valid_frac, test_frac):
+def all_cds_save_hdf5(input_file, train_file, valid_file, test_file, train_frac, valid_frac, test_frac):
     """split a set of annoted sequences into training, validation and test tests"""
 
     numpy.testing.assert_almost_equal(train_frac + valid_frac + test_frac, 1.,
@@ -56,11 +56,11 @@ def refseq_cds_savemat(input_file, train_file, valid_file, test_file, train_frac
     print('splitting in training, validation, and test sets')
 
     max_train = int(train_frac * df.shape[0])
-    df_named_subset_savemat('training', train_file, train_frac, df, 0, max_train)
+    df_named_subset_save_hdf5('training', train_file, train_frac, df, 0, max_train)
     valid_i = int(valid_frac * df.shape[0])
-    df_named_subset_savemat('validation', valid_file, valid_frac, df, max_train, max_train+valid_i)
-    df_named_subset_savemat('test', test_file, test_frac, df, max_train+valid_i, df.shape[0])
+    df_named_subset_save_hdf5('validation', valid_file, valid_frac, df, max_train, max_train+valid_i)
+    df_named_subset_save_hsf5('test', test_file, test_frac, df, max_train+valid_i, df.shape[0])
 
 
 if __name__ == '__main__':
-    refseq_cds_savemat()
+    all_cds_save_hdf5()
