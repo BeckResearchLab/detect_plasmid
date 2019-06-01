@@ -10,13 +10,13 @@ model: {
     #non_strand_specific: mean
 }
 sampler: !obj:hdf5_sample.Hdf5FileSampler {
-    filepath: /work/dacb/detect_plasmid/all_cds_test.mat,
+    filepath: /work/dacb/detect_plasmid/all_cds_test.h5,
     sequence_key: sequence,
     targets_key: target,
     sequence_batch_axis: 0,
     sequence_alphabet_axis: 2,
     targets_batch_axis: 1,
-    shuffle: False
+    shuffle: True
 }
 evaluate_model: !obj:selene_sdk.EvaluateModel {
     trained_model_path: /work/dacb/detect_plasmid/training_outputs/best_model.pth.tar,
