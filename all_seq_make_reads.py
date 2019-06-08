@@ -28,12 +28,12 @@ import scipy.io
 @click.option('-s', '--random_seed', 'random_seed', type=int, default=42,
             show_default=True,
             help='random seed to be used for shuffling and sampling data partitions')
-def all_cds_make_reads(read_length, min_seq_length, output_file, input_file, random_seed):
+def all_seq_make_reads(read_length, min_seq_length, output_file, input_file, random_seed):
     """Trim and / or filter sequences by their length"""
 
     random.seed(random_seed)
 
-    print(f'reading cds tsv data file {input_file}')
+    print(f'reading seq tsv data file {input_file}')
     df = pd.read_csv(input_file, sep='\t')
 
     if min_seq_length == 0:
@@ -96,4 +96,4 @@ def make_reads(df_source, max_length, update_product_id):
 
 
 if __name__ == '__main__':
-    all_cds_make_reads()
+    all_seq_make_reads()

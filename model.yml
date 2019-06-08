@@ -4,14 +4,14 @@ model: {
     path: /work/dacb/detect_plasmid/model.py,
     class: DeeperDeepSEA,
     class_args: {
-        sequence_length: 300,
+        sequence_length: 1000,
         n_targets: 1,
     },
     #non_strand_specific: mean
 }
 sampler: !obj:selene_sdk.samplers.MultiFileSampler {
     train_sampler: !obj:hdf5_sampler.Hdf5FileSampler {
-        filepath: /work/dacb/detect_plasmid/all_cds_train.h5,
+        filepath: /work/dacb/detect_plasmid/all_seq_train.h5,
         sequence_key: sequence,
         targets_key: target,
         sequence_batch_axis: 0,
@@ -20,7 +20,7 @@ sampler: !obj:selene_sdk.samplers.MultiFileSampler {
         shuffle: True
     },
     validate_sampler: !obj:hdf5_sampler.Hdf5FileSampler {
-        filepath: /work/dacb/detect_plasmid/all_cds_valid.h5,
+        filepath: /work/dacb/detect_plasmid/all_seq_valid.h5,
         sequence_key: sequence,
         targets_key: target,
         sequence_batch_axis: 0,
@@ -29,7 +29,7 @@ sampler: !obj:selene_sdk.samplers.MultiFileSampler {
         shuffle: True
     },
     test_sampler: !obj:hdf5_sampler.Hdf5FileSampler {
-        filepath: /work/dacb/detect_plasmid/all_cds_test.h5,
+        filepath: /work/dacb/detect_plasmid/all_seq_test.h5,
         sequence_key: sequence,
         targets_key: target,
         sequence_batch_axis: 0,
@@ -44,7 +44,7 @@ sampler: !obj:selene_sdk.samplers.MultiFileSampler {
 train_model: !obj:selene_sdk.TrainModel {
     batch_size: 64,
     max_steps: 1000000,  # update this value for longer training
-    report_stats_every_n_steps: 10000,
+    report_stats_every_n_steps: 1000,
     n_validation_samples: 16000,
     #n_test_samples: 120000,
     cpu_n_threads: 48,

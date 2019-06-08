@@ -9,7 +9,7 @@ model: {
     },
     #non_strand_specific: mean
 }
-sampler: !obj:hdf5_sample.Hdf5FileSampler {
+sampler: !obj:hdf5_sampler.Hdf5FileSampler {
     filepath: /work/dacb/detect_plasmid/all_cds_test.h5,
     sequence_key: sequence,
     targets_key: target,
@@ -19,7 +19,8 @@ sampler: !obj:hdf5_sample.Hdf5FileSampler {
     shuffle: True
 }
 evaluate_model: !obj:selene_sdk.EvaluateModel {
-    trained_model_path: /work/dacb/detect_plasmid/training_outputs/best_model.pth.tar,
+        #trained_model_path: /work/dacb/detect_plasmid/training_outputs/best_model.pth.tar,
+    trained_model_path: /work/dacb/detect_plasmid/training_outputs/checkpoint.pth.tar,
     features: !obj:selene_sdk.utils.load_features_list {
         input_path: /work/dacb/detect_plasmid/features.txt
     },

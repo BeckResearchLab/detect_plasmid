@@ -1,5 +1,5 @@
 """
-Adapted from DeepSEA (Zhou & Troyanskaya, 2015).
+Adapted from DeepSEA (Zhou & Troyanskaya, 2015)
 """
 import numpy as np
 import torch
@@ -30,32 +30,32 @@ class DeeperDeepSEA(nn.Module):
 
     def __init__(self, sequence_length, n_targets):
         super(DeeperDeepSEA, self).__init__()
-        conv_kernel_size = 6
-        pool_kernel_size = 3
+        conv_kernel_size = 8
+        pool_kernel_size = 4
 
         self.conv_net = nn.Sequential(
-            nn.Conv1d(4, 180, kernel_size=conv_kernel_size),
+            nn.Conv1d(4, 320, kernel_size=conv_kernel_size),
             nn.ReLU(inplace=True),
-            nn.Conv1d(180, 180, kernel_size=conv_kernel_size),
+            nn.Conv1d(320, 320, kernel_size=conv_kernel_size),
             nn.ReLU(inplace=True),
             nn.MaxPool1d(
                 kernel_size=pool_kernel_size, stride=pool_kernel_size),
-            nn.BatchNorm1d(180),
+            nn.BatchNorm1d(320),
 
-            nn.Conv1d(180, 280, kernel_size=conv_kernel_size),
+            nn.Conv1d(320, 480, kernel_size=conv_kernel_size),
             nn.ReLU(inplace=True),
-            nn.Conv1d(280, 280, kernel_size=conv_kernel_size),
+            nn.Conv1d(480, 480, kernel_size=conv_kernel_size),
             nn.ReLU(inplace=True),
             nn.MaxPool1d(
                 kernel_size=pool_kernel_size, stride=pool_kernel_size),
-            nn.BatchNorm1d(280),
+            nn.BatchNorm1d(480),
             nn.Dropout(p=0.2),
 
-            nn.Conv1d(280, 560, kernel_size=conv_kernel_size),
+            nn.Conv1d(480, 960, kernel_size=conv_kernel_size),
             nn.ReLU(inplace=True),
-            nn.Conv1d(560, 560, kernel_size=conv_kernel_size),
+            nn.Conv1d(960, 960, kernel_size=conv_kernel_size),
             nn.ReLU(inplace=True),
-            nn.BatchNorm1d(560),
+            nn.BatchNorm1d(960),
             nn.Dropout(p=0.2))
 
         reduce_by = 2 * (conv_kernel_size - 1)
@@ -67,7 +67,7 @@ class DeeperDeepSEA(nn.Module):
                  - reduce_by) / pool_kernel_size)
             - reduce_by)
         self.classifier = nn.Sequential(
-            nn.Linear(560 * self._n_channels, n_targets),
+            nn.Linear(960 * self._n_channels, n_targets),
             nn.ReLU(inplace=True),
             nn.BatchNorm1d(n_targets),
             nn.Linear(n_targets, n_targets),
@@ -78,7 +78,7 @@ class DeeperDeepSEA(nn.Module):
         Forward propagation of a batch.
         """
         out = self.conv_net(x)
-        reshape_out = out.view(out.size(0), 560 * self._n_channels)
+        reshape_out = out.view(out.size(0), 960 * self._n_channels)
         predict = self.classifier(reshape_out)
         return predict
 
