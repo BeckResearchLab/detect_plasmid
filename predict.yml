@@ -15,7 +15,10 @@ analyze_sequences: !obj:selene_sdk.predict.AnalyzeSequences {
     features: !obj:selene_sdk.utils.load_features_list {
         input_path: /work/dacb/detect_plasmid/features.txt
     },
-    batch_size: 64,
+    reference_sequence: !obj:selene_sdk.sequences.Genome {
+        input_path: /work/dacb/detect_plasmid/predict_sequences/seqs.fa
+    },
+    #batch_size: 64,
     use_cuda: False,
     write_mem_limit: 150000
 }
