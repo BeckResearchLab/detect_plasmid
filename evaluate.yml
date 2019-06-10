@@ -4,13 +4,13 @@ model: {
     path: /work/dacb/detect_plasmid/model.py,
     class: DeeperDeepSEA,
     class_args: {
-        sequence_length: 300,
+        sequence_length: 1000,
         n_targets: 1,
     },
     #non_strand_specific: mean
 }
 sampler: !obj:hdf5_sampler.Hdf5FileSampler {
-    filepath: /work/dacb/detect_plasmid/all_cds_test.h5,
+    filepath: /work/dacb/detect_plasmid/all_seq_test.h5,
     sequence_key: sequence,
     targets_key: target,
     sequence_batch_axis: 0,

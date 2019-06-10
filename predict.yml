@@ -1,17 +1,17 @@
 ---
 ops: [analyze]
 model: {
-    path: /work/dacb/detect_plasmid/deeperdeepsea.py,
+    path: /work/dacb/detect_plasmid/model.py,
     class: DeeperDeepSEA,
     class_args: {
-        sequence_length: 300,
+        sequence_length: 1000,
         n_targets: 1,
     },
     #non_strand_specific: mean
 }
 analyze_sequences: !obj:selene_sdk.predict.AnalyzeSequences {
     trained_model_path: /work/dacb/detect_plasmid/training_outputs/best_model.pth.tar,
-    sequence_length: 300,
+    sequence_length: 1000,
     features: !obj:selene_sdk.utils.load_features_list {
         input_path: /work/dacb/detect_plasmid/features.txt
     },

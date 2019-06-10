@@ -1,0 +1,56 @@
+#!/usr/bin/env python
+
+import random
+import sys
+
+from Bio import SeqIO
+from Bio.Seq import Seq
+import click
+import numpy as np
+import pandas as pd
+import scipy.io
+
+
+@click.command()
+@click.option('-r', '--read_length', 'read_length', default=300, type=int,
+            show_default=True,
+            help='the length of generated reads from the sequences; '+
+            'this is accomplished by randomly sampling strings of trim length'+
+            'from the full sequence as forward, reverse, complement and '+
+            'reverse complement')
+@click.option('-m', '--min_seq_length', 'min_seq_length', default=0, type=int,
+            show_default=True,
+            help='should sequences shorter than this be discarded (0 = disabled)')
+@click.option('-o', '--output_file', 'output_file', type=str, required=True,
+            help='name of the output file with reads')
+@click.option('-i', '--input_file', 'input_file', type=str, required=True,
+            help='the location of the taxonomy annotated sequences')
+@click.option('-s', '--random_seed', 'random_seed', type=int, default=42,
+            show_default=True,
+            help='random seed to be used for shuffling and sampling data partitions')
+def all_seq_make_reads_fasta(read_length, min_seq_length, output_file, input_file, random_seed):
+    """Split contigs into arbitrary length 'reads' for prediction"""
+
+    random.seed(random_seed)
+
+    print(f'reading seq fasta data file {input_file}')
+    count = 0
+    f = open(output_file, 'w')
+    for seq_record in SeqIO.parse(input_file, 'fasta'):
+        if min_seq_length > 0 and len(seq_record.seq) >= min_seq_length:
+            product_id = str(seq_record.id)
+            n = int(len(seq_record.seq) / read_length)
+            starts = random.choices(range(len(seq_record.seq) - read_length), k=n)
+            for i, start in enumerate(starts):
+                read_id = product_id + '|' + str(i)
+                read = str(seq_record.seq[start:start+read_length])
+                f.write(f'>{read_id}\n{read}\n')
+            
+                count = count + 1
+                if count > 0 and count % 1000000 == 0:
+                    print(f"{count} reads generated")
+    print(f'saved {count} sequences to {output_file}')
+    f.close()
+
+if __name__ == '__main__':
+    all_seq_make_reads_fasta()
