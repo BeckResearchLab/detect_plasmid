@@ -41,7 +41,7 @@ def all_seq_make_reads_fasta(read_length, output_file, input_file, random_seed):
         print(f'sequence {seq_record.id} is {len(seq_record.seq)} bases long')
         if len(seq_record.seq) >= read_length:
             product_id = str(seq_record.id)
-            n = int(len(seq_record.seq) / read_length)
+            n = int(len(seq_record.seq) / read_length) * 10
             starts = random.choices(range(len(seq_record.seq) - read_length), k=n)
             print(f'generating {n} subsequences')
             for i, start in enumerate(starts):
