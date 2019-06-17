@@ -25,7 +25,10 @@ import scipy.io
 @click.option('-s', '--random_seed', 'random_seed', type=int, default=42,
             show_default=True,
             help='random seed to be used for shuffling and sampling data partitions')
-def all_seq_make_reads_fasta(read_length, output_file, input_file, random_seed):
+@click.option('-c', '--coverage', 'coverage', type=int, default=10,
+            show_default=True,
+            help='how many samples per sequence divided by read length will be generated')
+def all_seq_make_reads_fasta(read_length, output_file, input_file, random_seed, coverage):
     """Split contigs into arbitrary length 'reads' for prediction
 
 
@@ -41,7 +44,7 @@ def all_seq_make_reads_fasta(read_length, output_file, input_file, random_seed):
         print(f'sequence {seq_record.id} is {len(seq_record.seq)} bases long')
         if len(seq_record.seq) >= read_length:
             product_id = str(seq_record.id)
-            n = int(len(seq_record.seq) / read_length) * 10
+            n = int(len(seq_record.seq) / read_length) * coverage
             starts = random.choices(range(len(seq_record.seq) - read_length), k=n)
             print(f'generating {n} subsequences')
             for i, start in enumerate(starts):
