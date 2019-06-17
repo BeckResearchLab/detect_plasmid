@@ -31,16 +31,18 @@ if [ ! -e all_seq.tsv ]; then
 			--output_file all_seq.tsv
 fi
 
-if [ ! -e all_reads.tsv ]; then
-	# this samples sequences like reads, but not necessarily as reads
-	./all_seq_make_reads.py --read_length $MIN_SEQ_LEN --input_file all_seq.tsv \
-			--output_file all_reads.tsv --random_seed $RANDOM_SEED
+if [ ! -e balanced_seq.tsv ]; then
+	echo "balancing representation of classes"
+	./all_seq_balance.py --input_file all_seq.tsv --output_file balanced_seq.tsv \
+			--positive_samples $CLASS_SAMPLES --random_seed $RANDOM_SEED
 fi
 
 if [ ! -e balanced_reads.tsv ]; then
-	echo "balancing representation of classes"
-	./all_seq_balance.py --input_file all_reads.tsv --output_file balanced_reads.tsv \
-			--positive_samples $CLASS_SAMPLES --random_seed $RANDOM_SEED
+	echo "generating read like sequences"
+	# this samples sequences like reads, but not necessarily as reads
+	./all_seq_make_reads.py --read_length $MIN_SEQ_LEN --input_file all_seq.tsv \
+			--output_file balanced_reads.tsv --random_seed $RANDOM_SEED \
+			--pos_coverage 10 --neg_coverage 1 --class_column 'is_plasmid'
 fi
 
 if [ ! -e all_seq_train.h5 -o ! -e all_seq_valid.h5 -o ! -e all_seq_test.h5 ]; then
