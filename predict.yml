@@ -7,7 +7,7 @@ model: {
         sequence_length: 1000,
         n_targets: 1,
     },
-    #non_strand_specific: mean
+#non_strand_specific: mean
 }
 analyze_sequences: !obj:selene_sdk.predict.AnalyzeSequences {
     trained_model_path: /work/dacb/detect_plasmid/training_outputs/best_model.pth.tar,
@@ -15,10 +15,10 @@ analyze_sequences: !obj:selene_sdk.predict.AnalyzeSequences {
     features: !obj:selene_sdk.utils.load_features_list {
         input_path: /work/dacb/detect_plasmid/features.txt
     },
-    reference_sequence: !obj:selene_sdk.sequences.Genome {
-        input_path: /work/dacb/detect_plasmid/predict_sequences/seqs.fa
-    },
-    #batch_size: 64,
+#reference_sequence: !obj:selene_sdk.sequences.Genome {
+#        input_path: /work/dacb/detect_plasmid/predict_sequences/seqs.fa
+#},
+    batch_size: 64,
     use_cuda: False,
     write_mem_limit: 150000
 }
