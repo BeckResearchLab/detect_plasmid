@@ -39,7 +39,6 @@ if [ ! -e fragmented_seq.tsv ]; then
 			--min_fragment_length $MIN_FRAGMENT_LENGTH --random_seed $RANDOM_SEED \
 			--sequence_column "sequence" --class_column "is_plasmid"
 fi
-exit
 
 ## balance
 if [ ! -e balanced_seq.tsv ]; then
@@ -48,14 +47,17 @@ if [ ! -e balanced_seq.tsv ]; then
 			--positive_samples $CLASS_SAMPLES --random_seed $RANDOM_SEED
 fi
 
+
 ## split
 if [ ! -e training_seq.tsv -o ! -e validation_seq.tsv -o ! -e testing_seq.tsv ]; then
 	echo "splitting the balanced sequences into training, validation and testing sets"
-	./all_seq_split.py --intput_file balanced_seq.tsv
+	./all_seq_split.py --input_file balanced_seq.tsv \
 			--train_frac 0.91 --valid_frac 0.01 --test_frac 0.08 \
 			--train_file training_seq.tsv --valid_file validation_seq.tsv \
 			--test_file testing_seq.tsv
 fi
+
+exit
 
 # training
 if [ ! -e training_reads.tsv ]; then
@@ -64,15 +66,12 @@ if [ ! -e training_reads.tsv ]; then
 	./all_seq_make_reads.py --read_length $MIN_SEQ_LEN 
 			--input_file training_seq.tsv \
 			--output_file training_reads.tsv --random_seed $RANDOM_SEED \
-			--pos_coverage 10 --neg_coverage 1 --class_column 'is_plasmid'
+			--coverage 1 --class_column 'is_plasmid'
 fi
 
 if [ ! -e training.h5 ]; then
 	echo "encoding and saving training data to hdf5 files"
-	./all_seq_save_hdf5.py --input_file training_reads.tsv \
-			--train_frac 1 --valid_frac 0 --test_frac 0 \
-			--train_file training.h5 --valid_file /tmp/a.h5 \
-			--test_file /tmp/b.h5
+	./all_seq_save_hdf5.py --input_file training_reads.tsv --output_file training.h5
 fi
 
 # validation
@@ -82,15 +81,12 @@ if [ ! -e validation_reads.tsv ]; then
 	./all_seq_make_reads.py --read_length $MIN_SEQ_LEN 
 			--input_file validation_seq.tsv \
 			--output_file validation_reads.tsv --random_seed $RANDOM_SEED \
-			--pos_coverage 10 --neg_coverage 1 --class_column 'is_plasmid'
+			--coverage 1 --class_column 'is_plasmid'
 fi
 
 if [ ! -e validation.h5 ]; then
 	echo "encoding and saving validation data to hdf5 files"
-	./all_seq_save_hdf5.py --input_file validation_reads.tsv \
-			--train_frac 0 --valid_frac 1 --test_frac 0 \
-			--train_file /tmp/a.h5 --valid_file /tmp/validation.h5 \
-			--test_file /tmp/b.h5
+	./all_seq_save_hdf5.py --input_file validation_reads.tsv --output_file validation.h5
 fi
 
 # testing
@@ -100,31 +96,10 @@ if [ ! -e testing_reads.tsv ]; then
 	./all_seq_make_reads.py --read_length $MIN_SEQ_LEN 
 			--input_file testing_seq.tsv \
 			--output_file testing_reads.tsv --random_seed $RANDOM_SEED \
-			--pos_coverage 10 --neg_coverage 1 --class_column 'is_plasmid'
+			--coverage 1 --class_column 'is_plasmid'
 fi
 
 if [ ! -e testing.h5 ]; then
 	echo "encoding and saving testing data to hdf5 files"
-	./all_seq_save_hdf5.py --input_file testing_reads.tsv \
-			--train_frac 0 --valid_frac 0 --test_frac 0 \
-			--train_file /tmp/a.h5 --valid_file /tmp/b.h5 \
-			--test_file testing.h5
-fi
-
-exit
-##### 
-if [ ! -e balanced_reads.tsv ]; then
-	echo "generating read like sequences"
-	# this samples sequences like reads, but not necessarily as reads
-	./all_seq_make_reads.py --read_length $MIN_SEQ_LEN --input_file all_seq.tsv \
-			--output_file balanced_reads.tsv --random_seed $RANDOM_SEED \
-			--pos_coverage 10 --neg_coverage 1 --class_column 'is_plasmid'
-fi
-
-if [ ! -e all_seq_train.h5 -o ! -e all_seq_valid.h5 -o ! -e all_seq_test.h5 ]; then
-	echo "encoding and saving data to hdf5 files"
-	./all_seq_save_hdf5.py --input_file balanced_reads.tsv \
-			--train_frac 0.91 --valid_frac 0.01 --test_frac 0.08 \
-			--train_file all_seq_train.h5 --valid_file all_seq_valid.h5 \
-			--test_file all_seq_test.h5
+	./all_seq_save_hdf5.py --input_file testing_reads.tsv --output_file testing.h5
 fi
