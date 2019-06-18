@@ -4,6 +4,7 @@ PLASMIDS_PATH=/work/data/NCBI_plasmids/plasmid
 REFSEQ_PATH=/work/data/refseq
 THREADS=24
 MIN_SEQ_LEN=1000
+MIN_FRAGMENT_LENGTH=10000
 MAX_PLASMID_LEN=500000
 MIN_REFSEQ_LEN=1000000
 RANDOM_SEED=42
@@ -31,14 +32,30 @@ if [ ! -e all_seq.tsv ]; then
 			--output_file all_seq.tsv
 fi
 
+## fragment
+if [ ! -e fragmented_seq.tsv ]; then
+	echo "fragmenting sequences before balancing and splitting"
+	./all_seq_fragment.py --input_file all_seq.tsv --output_file fragmented_seq.tsv \
+			--min_fragment_length $MIN_FRAGMENT_LENGTH --random_seed $RANDOM_SEED \
+			--sequence_column "sequence" --class_column "is_plasmid"
+fi
+exit
+
+## balance
 if [ ! -e balanced_seq.tsv ]; then
 	echo "balancing representation of classes"
-	./all_seq_balance.py --input_file all_seq.tsv --output_file balanced_seq.tsv \
+	./all_seq_balance.py --input_file fragmented_seq.tsv --output_file balanced_seq.tsv \
 			--positive_samples $CLASS_SAMPLES --random_seed $RANDOM_SEED
 fi
 
-#### SPLIT OUT THE SETS
-echo fix me
+## split
+if [ ! -e training_seq.tsv -o ! -e validation_seq.tsv -o ! -e testing_seq.tsv ]; then
+	echo "splitting the balanced sequences into training, validation and testing sets"
+	./all_seq_split.py --intput_file balanced_seq.tsv
+			--train_frac 0.91 --valid_frac 0.01 --test_frac 0.08 \
+			--train_file training_seq.tsv --valid_file validation_seq.tsv \
+			--test_file testing_seq.tsv
+fi
 
 # training
 if [ ! -e training_reads.tsv ]; then
@@ -93,6 +110,8 @@ if [ ! -e testing.h5 ]; then
 			--train_file /tmp/a.h5 --valid_file /tmp/b.h5 \
 			--test_file testing.h5
 fi
+
+exit
 ##### 
 if [ ! -e balanced_reads.tsv ]; then
 	echo "generating read like sequences"
