@@ -11,7 +11,7 @@ model: {
 }
 sampler: !obj:selene_sdk.samplers.MultiFileSampler {
     train_sampler: !obj:hdf5_sampler.Hdf5FileSampler {
-        filepath: /work/dacb/detect_plasmid/all_seq_train.h5,
+        filepath: /work/dacb/detect_plasmid/training.h5,
         sequence_key: sequence,
         targets_key: target,
         sequence_batch_axis: 0,
@@ -20,7 +20,7 @@ sampler: !obj:selene_sdk.samplers.MultiFileSampler {
         shuffle: True
     },
     validate_sampler: !obj:hdf5_sampler.Hdf5FileSampler {
-        filepath: /work/dacb/detect_plasmid/all_seq_valid.h5,
+        filepath: /work/dacb/detect_plasmid/validation.h5,
         sequence_key: sequence,
         targets_key: target,
         sequence_batch_axis: 0,
@@ -29,7 +29,7 @@ sampler: !obj:selene_sdk.samplers.MultiFileSampler {
         shuffle: True
     },
     test_sampler: !obj:hdf5_sampler.Hdf5FileSampler {
-        filepath: /work/dacb/detect_plasmid/all_seq_test.h5,
+        filepath: /work/dacb/detect_plasmid/testing.h5,
         sequence_key: sequence,
         targets_key: target,
         sequence_batch_axis: 0,
