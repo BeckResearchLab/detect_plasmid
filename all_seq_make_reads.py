@@ -89,10 +89,8 @@ def make_reads(df_source, max_length, update_product_id, coverage, pos_coverage,
             cov = coverage
             if pos_coverage != 0 and row[class_column] == 1:
                 cov = pos_coverage
-                print('+')
             elif neg_coverage != 0 and row[class_column] == 0:
                 cov = neg_coverage
-                print('-')
 
         starts = random.choices(range(len(seq) - max_length), k=n*4*cov)
         for i, start in enumerate(starts):

@@ -34,11 +34,11 @@ def all_seq_save_hdf5(input_file, output_file, class_column, sequence_column):
     df.drop(class_column, axis=1, inplace=True)
 
     print('saving output to {output_file}')
-    hdf5 = h5py.File(outfile, 'w')
-    sequences = np.array(df.iloc[range(start, end)][sequence_column].values.tolist())
+    hdf5 = h5py.File(output_file, 'w')
+    sequences = np.array(df[sequence_column].values.tolist())
     hdf5.create_dataset('sequence', data=sequences)
     del sequences
-    targets = np.array([df.iloc[range(start, end)][class_column].values.tolist()])
+    targets = np.array([df['target'].values.tolist()])
     hdf5.create_dataset('target', data=targets)
     hdf5.close()
 

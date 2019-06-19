@@ -48,8 +48,7 @@ def all_seq_split(input_file, train_file, valid_file, test_file, train_frac, val
     df = df.sample(frac=1).reset_index(drop=True)
 
     print('creating final data frame with just sequence and target columns')
-    df['target'] = np.array(df[class_column], dtype=int)
-    df.drop(class_column, axis=1, inplace=True)
+    df[class_column] = np.array(df[class_column], dtype=int)
 
     print('splitting in training, validation, and test sets')
     max_train = int(train_frac * df.shape[0])
