@@ -12,19 +12,16 @@ import selene_sdk.sequences
                 help='the location of the balanced sequences sets for classification')
 @click.option('-o', '--output_file', 'output_file', type=str, required=True,
                 help='name of the output file for the encoded hdf5 data')
-@click.option('-c', '--class_column', 'class_column', type='str', required=True,
+@click.option('-c', '--class_column', 'class_column', type=str, required=True,
                 help='the name of the column in the data file with the target class info')
-@click.option('-s', '--sequence_column', 'sequence_column', type='str',
+@click.option('-s', '--sequence_column', 'sequence_column', type=str,
                 default='sequence', show_default=True,
                 help='the name of the column in the data file with sequence data')
-def all_seq_save_hdf5(input_file, train_file, valid_file, test_file, train_frac, valid_frac, test_frac, class_column, sequence_column):
-    """split a set of class annotated sequences into training, validation and test sets"""
-
-    numpy.testing.assert_almost_equal(train_frac + valid_frac + test_frac, 1.,
-        err_msg='the fractions of training, validation and test data do not equal 1')
+def all_seq_save_hdf5(input_file, output_file, class_column, sequence_column):
+    """encode DNA sequences and classification column and save to hdf5"""
 
     print(f'reading cds data from tsv file {input_file}')
-    df = pd.read_csv(input_file, sep='\t').filter(items=['sequence', 'is_plasmid'])
+    df = pd.read_csv(input_file, sep='\t').filter(items=[sequence_column, class_column])
 
     print(f'encoding {df.shape[0]} sequences')
     bases_arr = np.array(['A', 'C', 'G', 'T'])
@@ -38,10 +35,10 @@ def all_seq_save_hdf5(input_file, train_file, valid_file, test_file, train_frac,
 
     print('saving output to {output_file}')
     hdf5 = h5py.File(outfile, 'w')
-    sequences = np.array(df.iloc[range(start, end)]['sequence'].values.tolist())
+    sequences = np.array(df.iloc[range(start, end)][sequence_column].values.tolist())
     hdf5.create_dataset('sequence', data=sequences)
     del sequences
-    targets = np.array([df.iloc[range(start, end)]['target'].values.tolist()])
+    targets = np.array([df.iloc[range(start, end)][class_column].values.tolist()])
     hdf5.create_dataset('target', data=targets)
     hdf5.close()
 
