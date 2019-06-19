@@ -57,13 +57,11 @@ if [ ! -e training_seq.tsv -o ! -e validation_seq.tsv -o ! -e testing_seq.tsv ];
 			--test_file testing_seq.tsv
 fi
 
-exit
-
 # training
 if [ ! -e training_reads.tsv ]; then
 	echo "generating read like sequences for training data"
 	# this samples sequences like reads, but not necessarily as reads
-	./all_seq_make_reads.py --read_length $MIN_SEQ_LEN 
+	./all_seq_make_reads.py --read_length $MIN_SEQ_LEN \
 			--input_file training_seq.tsv \
 			--output_file training_reads.tsv --random_seed $RANDOM_SEED \
 			--coverage 1 --class_column 'is_plasmid'
@@ -71,14 +69,15 @@ fi
 
 if [ ! -e training.h5 ]; then
 	echo "encoding and saving training data to hdf5 files"
-	./all_seq_save_hdf5.py --input_file training_reads.tsv --output_file training.h5
+	./all_seq_save_hdf5.py --input_file training_reads.tsv --output_file training.h5 \
+			--sequence_column "sequence" --class_column "is_plasmid"
 fi
 
 # validation
 if [ ! -e validation_reads.tsv ]; then
 	echo "generating read like sequences for validation data"
 	# this samples sequences like reads, but not necessarily as reads
-	./all_seq_make_reads.py --read_length $MIN_SEQ_LEN 
+	./all_seq_make_reads.py --read_length $MIN_SEQ_LEN \
 			--input_file validation_seq.tsv \
 			--output_file validation_reads.tsv --random_seed $RANDOM_SEED \
 			--coverage 1 --class_column 'is_plasmid'
@@ -86,14 +85,15 @@ fi
 
 if [ ! -e validation.h5 ]; then
 	echo "encoding and saving validation data to hdf5 files"
-	./all_seq_save_hdf5.py --input_file validation_reads.tsv --output_file validation.h5
+	./all_seq_save_hdf5.py --input_file validation_reads.tsv --output_file validation.h5 \
+			--sequence_column "sequence" --class_column "is_plasmid"
 fi
 
 # testing
 if [ ! -e testing_reads.tsv ]; then
 	echo "generating read like sequences for testing data"
 	# this samples sequences like reads, but not necessarily as reads
-	./all_seq_make_reads.py --read_length $MIN_SEQ_LEN 
+	./all_seq_make_reads.py --read_length $MIN_SEQ_LEN \
 			--input_file testing_seq.tsv \
 			--output_file testing_reads.tsv --random_seed $RANDOM_SEED \
 			--coverage 1 --class_column 'is_plasmid'
@@ -101,5 +101,6 @@ fi
 
 if [ ! -e testing.h5 ]; then
 	echo "encoding and saving testing data to hdf5 files"
-	./all_seq_save_hdf5.py --input_file testing_reads.tsv --output_file testing.h5
+	./all_seq_save_hdf5.py --input_file testing_reads.tsv --output_file testing.h5 \
+			--sequence_column "sequence" --class_column "is_plasmid"
 fi
