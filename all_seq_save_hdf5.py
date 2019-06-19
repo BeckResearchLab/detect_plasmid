@@ -29,11 +29,11 @@ def all_seq_save_hdf5(input_file, output_file, class_column, sequence_column):
     df[sequence_column] = df[sequence_column].apply(lambda x:
         selene_sdk.sequences.sequence_to_encoding(x, bases_encoding, bases_arr))
 
-    print('creating final data frame with encoded taxonomy flags')
+    print('creating final data frame with encoded class')
     df['target'] = np.array(df[class_column], dtype=int)
     df.drop(class_column, axis=1, inplace=True)
 
-    print('saving output to {output_file}')
+    print(f'saving output to {output_file}')
     hdf5 = h5py.File(output_file, 'w')
     sequences = np.array(df[sequence_column].values.tolist())
     hdf5.create_dataset('sequence', data=sequences)
